@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:"Poppins", sans-serif;
+}
+
+body{
+    background-color: #3e28bd;
+    font-family: "Poppins", sans-serif;
+    position: relative;
+}
+
+.canvas-frame{
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+/* Imagem de fundo com opacidade (usar ../img porque o CSS está em css/) */
+body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("../img/snakegame.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    opacity: 0.2; /* ajuste aqui (0.0 - 1.0) */
+    pointer-events: none;
+    z-index: 0;
+}
+
+canvas{
+        background-color: #0b6623; /* verde */
+        border: 3px solid #fdf8f8;
+        display: block;
+        width: 100%;
+        height: auto;
+        max-width: 400px;
+        box-shadow: 0 4px 14px rgba(236, 185, 185, 0.4);
+}
+
+.controls button{ min-width: 54px; }
+
+.card{
+    background: linear-gradient(135deg, rgba(2,12,35,0.85), rgba(3,21,60,0.75));
+    border: 1px solid rgba(0, 255, 255, 0.15);
+    box-shadow: 0 8px 30px rgba(0, 200, 255, 0.12), 0 0 20px    rgba(241, 241, 239, 0.959) inset;
+    border-radius: 12px;
+    color: #fcfcfc;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* Neon accent glow around the card for stronger neon effect */
+.card{
+    background: linear-gradient(135deg, rgba(2,12,35,0.85), rgba(3,21,60,0.75));
+    /* borda branca fina conforme pedido */
+    border: 1.5px solid rgba(255,255,255,0.85);
+    box-shadow: 0 8px 30px rgba(0, 200, 255, 0.12), 0 0 20px rgba(0, 200, 255, 0.12) inset;
+    border-radius: 12px;
+    color: #e6f7ff;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* Neon accent glow around the card for stronger neon effect */
+.card::after{
+    content: "";
+    position: absolute;
+    inset: -6px;
+    background: radial-gradient(closest-side, rgba(0,200,255,0.18), transparent 60%);
+    filter: blur(8px);
+    z-index: -1;
+    border-radius: 14px;
+    pointer-events: none;
+}
