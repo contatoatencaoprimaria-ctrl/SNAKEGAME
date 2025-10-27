@@ -7,9 +7,17 @@
 }
 
 body{
+    /* Fundo principal: cor de fallback + imagem centralizada cobrindo a tela */
     background-color: #3e28bd;
+    background-image: linear-gradient(rgba(62,40,189,0.55), rgba(2,12,35,0.55)), url("../img/snakegame.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover; /* cobre toda a viewport */
+    background-attachment: fixed;
+    background-blend-mode: overlay;
     font-family: "Poppins", sans-serif;
     position: relative;
+    min-height: 100vh;
 }
 
 .canvas-frame{
