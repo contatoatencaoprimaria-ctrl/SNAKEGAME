@@ -20,6 +20,81 @@ let running = false;
 // Audio context for beeps (reused)
 let audioCtx = null;
 
+// Music state (background musiquinha)
+let musicPlaying = false;
+let musicOsc1 = null;
+let musicOsc2 = null;
+let musicGain = null;
+let musicLead = null;
+let musicInterval = null;
+
+function startMusic() {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        // master gain for music
+        musicGain = audioCtx.createGain();
+        musicGain.gain.value = 0.06; // baixo por padrão
+        musicGain.connect(audioCtx.destination);
+
+        // duas osciladores para um pad
+        musicOsc1 = audioCtx.createOscillator();
+        musicOsc2 = audioCtx.createOscillator();
+        musicOsc1.type = 'sine';
+        musicOsc2.type = 'sine';
+        musicOsc1.frequency.value = 110; // A2
+        musicOsc2.frequency.value = 220; // A3
+        musicOsc2.detune.value = 8;
+        musicOsc1.connect(musicGain);
+        musicOsc2.connect(musicGain);
+        musicOsc1.start();
+        musicOsc2.start();
+
+        // lead arpeggio (pequeno sequencer) para dar melodia
+        const notes = [220, 246.94, 293.66, 329.63]; // A, B, D, E
+        let idx = 0;
+        const leadOsc = audioCtx.createOscillator();
+        const leadGain = audioCtx.createGain();
+        leadOsc.type = 'triangle';
+        leadOsc.frequency.value = notes[0];
+        leadGain.gain.value = 0.0001;
+        leadOsc.connect(leadGain);
+        leadGain.connect(audioCtx.destination);
+        leadOsc.start();
+        musicLead = { leadOsc, leadGain };
+
+        musicInterval = setInterval(() => {
+            const t = audioCtx.currentTime;
+            const f = notes[idx % notes.length];
+            musicLead.leadOsc.frequency.setValueAtTime(f, t);
+            // envelope rápido
+            musicLead.leadGain.gain.cancelScheduledValues(t);
+            musicLead.leadGain.gain.setValueAtTime(0.0001, t);
+            musicLead.leadGain.gain.exponentialRampToValueAtTime(0.08, t + 0.02);
+            musicLead.leadGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+            idx++;
+        }, 480);
+
+        musicPlaying = true;
+    } catch (e) {
+        console.warn('startMusic error:', e);
+    }
+}
+
+function stopMusic() {
+    try {
+        if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+        if (musicOsc1) { musicOsc1.stop(); musicOsc1.disconnect(); musicOsc1 = null; }
+        if (musicOsc2) { musicOsc2.stop(); musicOsc2.disconnect(); musicOsc2 = null; }
+        if (musicLead) { musicLead.leadOsc.stop(); musicLead.leadOsc.disconnect(); musicLead.leadGain.disconnect(); musicLead = null; }
+        if (musicGain) { musicGain.disconnect(); musicGain = null; }
+        musicPlaying = false;
+    } catch (e) {
+        console.warn('stopMusic error:', e);
+    }
+}
+
 function playBeep(frequency = 880, duration = 0.08, type = 'sine', volume = 0.12) {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -51,6 +126,7 @@ const btnUp = document.getElementById('btnUp');
 const btnDown = document.getElementById('btnDown');
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
+const musicBtn = document.getElementById('musicBtn');
 
 // Inicialização
 function init() {
@@ -196,8 +272,28 @@ function attachEvents() {
     btnRight.addEventListener('click', () => setDirection(1, 0));
 
     // Start / Pause buttons
-    startBtn.addEventListener('click', () => { resetGame(); startGame(); });
+    startBtn.addEventListener('click', () => { resetGame(); startGame(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); });
     pauseBtn.addEventListener('click', () => togglePause());
+
+    // Music toggle button
+    if (musicBtn) {
+        musicBtn.addEventListener('click', () => {
+            // ensure AudioContext is allowed (user interaction)
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (!musicPlaying) {
+                startMusic();
+                musicBtn.setAttribute('aria-pressed', 'true');
+                musicBtn.classList.add('active');
+                musicBtn.textContent = '♪ on';
+            } else {
+                stopMusic();
+                musicBtn.setAttribute('aria-pressed', 'false');
+                musicBtn.classList.remove('active');
+                musicBtn.textContent = '♪';
+            }
+        });
+    }
 
     // Click canvas to pause/resume
     canvas.addEventListener('click', () => togglePause());
