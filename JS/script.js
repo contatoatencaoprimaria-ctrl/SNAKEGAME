@@ -127,7 +127,7 @@ function gameOver() {
     running = false;
     clearInterval(intervalId);
     intervalId = null;
-    alert('Game over! Score: ' + score);
+    alert('Tecle espaço para mais uma chance! Score: ' + score);
 }
 
 function startGame() {
