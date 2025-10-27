@@ -24,13 +24,14 @@ body::before{
     position: fixed;
     inset: 0;
     /* caminho relativo correto: CSS/ está uma pasta abaixo do root */
-    background-image: url("snakegame.png");
+    background-image: url("img/snakegame.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
     opacity: 0.2; /* ajuste aqui (0.0 - 1.0) */
     pointer-events: none;
-    z-index: 0;
+    /* garantir que o background fique atrás de todo o conteúdo */
+    z-index: -1;
 }
 
 canvas{
@@ -48,6 +49,7 @@ canvas{
 /* Neon card (propriedades unificadas) */
 .card{
     position: relative; /* necessário para que ::after seja posicionado corretamente */
+        z-index: 1; /* garante que o card apareça acima do background */
     background: linear-gradient(135deg, rgba(2,12,35,0.85), rgba(3,21,60,0.75));
     /* borda branca fina conforme pedido */
     border: 1.5px solid rgba(255,255,255,0.85);
@@ -68,4 +70,10 @@ canvas{
     z-index: -1;
     border-radius: 14px;
     pointer-events: none;
+}
+
+/* Força cor clara para instruções pequenas dentro do card (melhora legibilidade) */
+.card .small.text-muted,
+.card p.small.text-muted{
+    color: rgba(255,255,255,0.9) !important;
 }
