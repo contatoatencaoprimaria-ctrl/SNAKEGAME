@@ -23,7 +23,7 @@ body::before{
     content: "";
     position: fixed;
     inset: 0;
-    background-image: url("../img/snakegame.png");
+    background-image: url("/img/snakegame.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
