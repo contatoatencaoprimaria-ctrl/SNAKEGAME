@@ -7,17 +7,31 @@
 }
 
 body{
-    /* Fundo principal: cor de fallback + imagem centralizada cobrindo a tela */
-    background-color: #3e28bd;
-    background-image: linear-gradient(rgba(62,40,189,0.55), rgba(2,12,35,0.55)), url("../img/snakegame.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover; /* cobre toda a viewport */
-    background-attachment: fixed;
-    background-blend-mode: overlay;
+    /* Gradiente animado moderno */
+    background: linear-gradient(45deg, 
+        #1a1a2e,
+        #16213e,
+        #0f3460,
+        #183d3d
+    );
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    min-height: 100vh;
     font-family: "Poppins", sans-serif;
     position: relative;
-    min-height: 100vh;
+}
+
+/* Animação do gradiente */
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .canvas-frame{
@@ -32,7 +46,7 @@ body::before{
     position: fixed;
     inset: 0;
     /* caminho relativo correto: CSS/ está uma pasta abaixo do root */
-    background-image: url("img/snakegame.png");
+    background-image: url("/img/snakegame.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
