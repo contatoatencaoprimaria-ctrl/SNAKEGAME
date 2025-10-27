@@ -17,6 +17,30 @@ let highscore = 0;
 let intervalId = null;
 let speed = START_SPEED;
 let running = false;
+// Audio context for beeps (reused)
+let audioCtx = null;
+
+function playBeep(frequency = 880, duration = 0.08, type = 'sine', volume = 0.12) {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type;
+        o.frequency.value = frequency;
+        g.gain.value = volume;
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        g.gain.setValueAtTime(volume, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        o.start(now);
+        o.stop(now + duration + 0.02);
+    } catch (e) {
+        // Safari/older browsers might throw — ignore gracefully
+        console.warn('playBeep error:', e);
+    }
+}
 
 // DOM
 const scoreEl = document.getElementById('score');
@@ -83,11 +107,13 @@ function gameTick() {
     // comer comida?
     if (food && head.x === food.x && head.y === food.y) {
         score += 10;
+        // beep ao pegar a comida
+        playBeep(880, 0.09, 'sine', 0.66);
         if (score > highscore) { highscore = score; localStorage.setItem('snake_high', highscore); }
         placeFood();
         updateScore();
         // opcional: acelera um pouco
-        if (speed > 40) speed = Math.max(40, speed - 3);
+        if (speed > 90) speed = Math.max(40, speed - 3);
         restartInterval();
     } else {
         // remove cauda
