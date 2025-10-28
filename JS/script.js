@@ -210,6 +210,8 @@ function startGame() {
     if (running) return;
     running = true;
     restartInterval();
+    // garantir que o canvas receba foco para entradas de teclado
+    try { canvas.focus(); } catch (e) {}
 }
 
 function restartInterval() {
@@ -258,11 +260,24 @@ function setDirection(dx, dy) {
 function attachEvents() {
     // Keyboard
     window.addEventListener('keydown', (e) => {
-        const key = e.key.toLowerCase();
-        if (['arrowup','w'].includes(key) || key === 'w') setDirection(0, -1);
-        if (['arrowdown','s'].includes(key) || key === 's') setDirection(0, 1);
-        if (['arrowleft','a'].includes(key) || key === 'a') setDirection(-1, 0);
-        if (['arrowright','d'].includes(key) || key === 'd') setDirection(1, 0);
+        const key = (e.key || '').toLowerCase();
+
+        // tratar espaço: pausar/retomar e evitar scroll da página
+        if (key === ' ' || key === 'space' || key === 'spacebar' || e.code === 'Space') {
+            e.preventDefault();
+            togglePause();
+            return;
+        }
+
+        // evitar scroll/efeitos padrão para setas
+        if (key.startsWith('arrow') || ['w','a','s','d'].includes(key)) {
+            e.preventDefault();
+        }
+
+        if (key === 'arrowup' || key === 'w') setDirection(0, -1);
+        if (key === 'arrowdown' || key === 's') setDirection(0, 1);
+        if (key === 'arrowleft' || key === 'a') setDirection(-1, 0);
+        if (key === 'arrowright' || key === 'd') setDirection(1, 0);
     });
 
     // Buttons (mouse/touch)
